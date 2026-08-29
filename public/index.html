@@ -4,10 +4,351 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Collaborative Map Training V3</title>
+
+    <script src="/socket.io/socket.io.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #111827;
+            color: white;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 60px 0;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 42px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #cbd5e1;
+            font-size: 18px;
+            margin-bottom: 40px;
+        }
+
+        .modes {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+        }
+
+        .mode-card {
+            background: #1f2937;
+            border: 1px solid #374151;
+            border-radius: 16px;
+            padding: 35px;
+        }
+
+        .mode-card h2 {
+            margin-top: 0;
+            font-size: 26px;
+        }
+
+        .mode-card p {
+            color: #cbd5e1;
+            min-height: 50px;
+            line-height: 1.5;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            margin-top: 20px;
+            border: none;
+            border-radius: 10px;
+            background: #2563eb;
+            color: white;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            margin-top: 10px;
+            border: 1px solid #4b5563;
+            border-radius: 8px;
+            background: #111827;
+            color: white;
+            font-size: 16px;
+        }
+
+        .room-panel {
+            display: none;
+            max-width: 500px;
+            margin: 30px auto 0;
+            background: #1f2937;
+            border: 1px solid #374151;
+            border-radius: 16px;
+            padding: 30px;
+        }
+
+        .room-code {
+            font-size: 42px;
+            font-weight: bold;
+            letter-spacing: 8px;
+            margin: 20px 0;
+        }
+
+        .status {
+            margin-top: 20px;
+            color: #94a3b8;
+        }
+
+        .back-button {
+            background: #4b5563;
+        }
+
+        .back-button:hover {
+            background: #374151;
+        }
+
+        .version {
+            margin-top: 35px;
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        @media (max-width: 700px) {
+            .modes {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 32px;
+            }
+        }
+    </style>
 </head>
+
 <body>
+
+<div class="container">
+
     <h1>Collaborative Map Training V3</h1>
-    <p>V3 Foundation is working.</p>
-    <p>Local server port: 3002</p>
+
+    <div class="subtitle">
+        Choose how you want to run your training.
+    </div>
+
+    <div id="modeSelection" class="modes">
+
+        <div class="mode-card">
+            <h2>Free Mode</h2>
+
+            <p>
+                Open-ended collaborative map plotting and chat.
+                Everyone can interact freely.
+            </p>
+
+            <button onclick="showFreeMode()">
+                Start Free Mode
+            </button>
+        </div>
+
+        <div class="mode-card">
+            <h2>Structured Mode</h2>
+
+            <p>
+                Host-controlled simulations with scripted events,
+                scheduled messages, and a simulation clock.
+            </p>
+
+            <button onclick="structuredModeComingSoon()">
+                Start Structured Mode
+            </button>
+        </div>
+
+    </div>
+
+    <div id="freeModePanel" class="room-panel">
+
+        <h2>Free Mode</h2>
+
+        <input
+            id="hostName"
+            type="text"
+            placeholder="Enter your name"
+        >
+
+        <button onclick="createRoom()">
+            Host New Room
+        </button>
+
+        <hr style="margin: 30px 0; border-color: #374151;">
+
+        <input
+            id="roomCodeInput"
+            type="text"
+            placeholder="Enter room code"
+            maxlength="5"
+        >
+
+        <input
+            id="joinName"
+            type="text"
+            placeholder="Enter your name"
+        >
+
+        <button onclick="joinRoom()">
+            Join Room
+        </button>
+
+        <button
+            class="back-button"
+            onclick="backToModes()"
+        >
+            Back
+        </button>
+
+        <div id="roomStatus" class="status"></div>
+
+    </div>
+
+    <div id="roomCreatedPanel" class="room-panel">
+
+        <h2>Room Created</h2>
+
+        <p>Give this code to the people joining your training:</p>
+
+        <div id="roomCodeDisplay" class="room-code">
+            -----
+        </div>
+
+        <p id="hostStatus" class="status">
+            Waiting for participants...
+        </p>
+
+        <button
+            class="back-button"
+            onclick="backToModes()"
+        >
+            Back
+        </button>
+
+    </div>
+
+    <div class="version">
+        V3.0 • Collaborative Map Training
+    </div>
+
+</div>
+
+<script>
+    const socket = io();
+
+    function showFreeMode() {
+        document.getElementById("modeSelection").style.display = "none";
+        document.getElementById("freeModePanel").style.display = "block";
+    }
+
+    function backToModes() {
+        document.getElementById("modeSelection").style.display = "grid";
+        document.getElementById("freeModePanel").style.display = "none";
+        document.getElementById("roomCreatedPanel").style.display = "none";
+    }
+
+    function createRoom() {
+        const name =
+            document.getElementById("hostName").value.trim() ||
+            "Host";
+
+        socket.emit(
+            "room:create",
+            { name },
+            (response) => {
+
+                if (!response.success) {
+                    document.getElementById("roomStatus").textContent =
+                        response.error || "Could not create room.";
+
+                    return;
+                }
+
+                document.getElementById("freeModePanel").style.display =
+                    "none";
+
+                document.getElementById("roomCreatedPanel").style.display =
+                    "block";
+
+                document.getElementById("roomCodeDisplay").textContent =
+                    response.code;
+            }
+        );
+    }
+
+    function joinRoom() {
+        const code =
+            document
+                .getElementById("roomCodeInput")
+                .value
+                .trim()
+                .toUpperCase();
+
+        const name =
+            document.getElementById("joinName").value.trim() ||
+            "Operator";
+
+        if (!code) {
+            document.getElementById("roomStatus").textContent =
+                "Enter a room code.";
+
+            return;
+        }
+
+        socket.emit(
+            "room:join",
+            { code, name },
+            (response) => {
+
+                if (!response.success) {
+                    document.getElementById("roomStatus").textContent =
+                        response.error || "Could not join room.";
+
+                    return;
+                }
+
+                document.getElementById("roomStatus").textContent =
+                    `Connected to room ${response.code}.`;
+            }
+        );
+    }
+
+    function structuredModeComingSoon() {
+        alert(
+            "Structured Mode is coming next. We are building it separately so Free Mode stays stable."
+        );
+    }
+
+    socket.on("room:users", (users) => {
+
+        const hostStatus =
+            document.getElementById("hostStatus");
+
+        if (!hostStatus) return;
+
+        hostStatus.textContent =
+            `${users.length} participant(s) connected.`;
+    });
+</script>
+
 </body>
 </html>
