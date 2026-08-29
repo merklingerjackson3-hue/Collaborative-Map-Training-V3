@@ -22,67 +22,61 @@
 
         .container {
             width: 90%;
-            max-width: 900px;
+            max-width: 1100px;
             margin: 0 auto;
-            padding: 60px 0;
-            text-align: center;
+            padding: 40px 0;
         }
 
         h1 {
-            font-size: 42px;
-            margin-bottom: 10px;
+            text-align: center;
+            font-size: 40px;
+            margin-bottom: 8px;
         }
 
         .subtitle {
+            text-align: center;
             color: #cbd5e1;
-            font-size: 18px;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
         }
 
-        .modes {
+        .hidden {
+            display: none !important;
+        }
+
+        .card {
+            background: #1f2937;
+            border: 1px solid #374151;
+            border-radius: 16px;
+            padding: 25px;
+        }
+
+        .mode-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 25px;
+            gap: 20px;
         }
 
         .mode-card {
             background: #1f2937;
             border: 1px solid #374151;
             border-radius: 16px;
-            padding: 35px;
+            padding: 30px;
+            text-align: center;
         }
 
         .mode-card h2 {
             margin-top: 0;
-            font-size: 26px;
         }
 
         .mode-card p {
             color: #cbd5e1;
-            min-height: 50px;
             line-height: 1.5;
-        }
-
-        button {
-            width: 100%;
-            padding: 15px;
-            margin-top: 20px;
-            border: none;
-            border-radius: 10px;
-            background: #2563eb;
-            color: white;
-            font-size: 17px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background: #1d4ed8;
+            min-height: 70px;
         }
 
         input {
             width: 100%;
-            padding: 14px;
+            padding: 13px;
             margin-top: 10px;
             border: 1px solid #4b5563;
             border-radius: 8px;
@@ -91,49 +85,187 @@
             font-size: 16px;
         }
 
-        .room-panel {
-            display: none;
-            max-width: 500px;
-            margin: 30px auto 0;
-            background: #1f2937;
-            border: 1px solid #374151;
-            border-radius: 16px;
-            padding: 30px;
+        button {
+            padding: 12px 18px;
+            border: none;
+            border-radius: 8px;
+            background: #2563eb;
+            color: white;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        .primary-button {
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .secondary-button {
+            background: #4b5563;
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .secondary-button:hover {
+            background: #374151;
         }
 
         .room-code {
-            font-size: 42px;
+            font-size: 40px;
             font-weight: bold;
             letter-spacing: 8px;
+            text-align: center;
             margin: 20px 0;
         }
 
         .status {
-            margin-top: 20px;
+            text-align: center;
             color: #94a3b8;
+            margin-top: 15px;
         }
 
-        .back-button {
-            background: #4b5563;
+        .chat-layout {
+            display: grid;
+            grid-template-columns: 220px 1fr;
+            gap: 15px;
+            margin-top: 25px;
         }
 
-        .back-button:hover {
+        .chat-list {
+            background: #1f2937;
+            border: 1px solid #374151;
+            border-radius: 12px;
+            padding: 15px;
+        }
+
+        .chat-list h3 {
+            margin-top: 0;
+        }
+
+        .chat-room-button {
+            width: 100%;
+            margin-bottom: 8px;
+            text-align: left;
             background: #374151;
         }
 
-        .version {
-            margin-top: 35px;
+        .chat-room-button.active {
+            background: #2563eb;
+        }
+
+        .chat-window {
+            background: #1f2937;
+            border: 1px solid #374151;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            height: 500px;
+            min-height: 0;
+        }
+
+        .chat-header {
+            padding: 15px;
+            border-bottom: 1px solid #374151;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .messages {
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 15px;
+        }
+
+        .message {
+            margin-bottom: 14px;
+            overflow-wrap: anywhere;
+        }
+
+        .message-name {
+            font-weight: bold;
+            margin-bottom: 3px;
+        }
+
+        .message-time {
             color: #64748b;
+            font-size: 12px;
+            margin-left: 8px;
+            font-weight: normal;
+        }
+
+        .message-text {
+            color: #e5e7eb;
+            line-height: 1.4;
+        }
+
+        .chat-input-area {
+            display: flex;
+            gap: 10px;
+            padding: 15px;
+            border-top: 1px solid #374151;
+            flex-shrink: 0;
+        }
+
+        .chat-input-area input {
+            margin: 0;
+            flex: 1;
+        }
+
+        .chat-input-area button {
+            width: 100px;
+        }
+
+        .participant-count {
+            color: #94a3b8;
             font-size: 13px;
+            margin-top: 8px;
+        }
+
+        .info-box {
+            margin-top: 20px;
+            padding: 15px;
+            background: #111827;
+            border-radius: 10px;
+            color: #94a3b8;
+            line-height: 1.5;
         }
 
         @media (max-width: 700px) {
-            .modes {
+            .mode-grid {
                 grid-template-columns: 1fr;
             }
 
+            .chat-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .chat-list {
+                max-height: 150px;
+                overflow-y: auto;
+            }
+
+            .chat-window {
+                height: 60vh;
+                min-height: 400px;
+            }
+
             h1 {
-                font-size: 32px;
+                font-size: 30px;
+            }
+
+            .chat-input-area {
+                flex-direction: column;
+            }
+
+            .chat-input-area button {
+                width: 100%;
             }
         }
     </style>
@@ -146,74 +278,93 @@
     <h1>Collaborative Map Training V3</h1>
 
     <div class="subtitle">
-        Choose how you want to run your training.
+        Collaborative Training Platform
     </div>
 
-    <div id="modeSelection" class="modes">
+    <!-- MODE SELECTION -->
+
+    <div id="modeSelection" class="mode-grid">
 
         <div class="mode-card">
+
             <h2>Free Mode</h2>
 
             <p>
-                Open-ended collaborative map plotting and chat.
-                Everyone can interact freely.
+                Open-ended collaborative training.
+                Create or join a room and communicate
+                with other participants.
             </p>
 
-            <button onclick="showFreeMode()">
+            <button
+                class="primary-button"
+                onclick="showFreeMode()"
+            >
                 Start Free Mode
             </button>
+
         </div>
 
         <div class="mode-card">
+
             <h2>Structured Mode</h2>
 
             <p>
-                Host-controlled simulations with scripted events,
-                scheduled messages, and a simulation clock.
+                Host-controlled simulations with
+                scripted events, simulation time,
+                and advanced training controls.
             </p>
 
-            <button onclick="structuredModeComingSoon()">
+            <button
+                class="primary-button"
+                onclick="showStructuredMode()"
+            >
                 Start Structured Mode
             </button>
+
         </div>
 
     </div>
 
-    <div id="freeModePanel" class="room-panel">
+
+    <!-- FREE MODE SETUP -->
+
+    <div id="freeModeSetup" class="card hidden">
 
         <h2>Free Mode</h2>
 
+        <p>
+            Create a new room or join an existing room.
+        </p>
+
         <input
-            id="hostName"
+            id="nameInput"
             type="text"
-            placeholder="Enter your name"
+            placeholder="Your name"
         >
-
-        <button onclick="createRoom()">
-            Host New Room
-        </button>
-
-        <hr style="margin: 30px 0; border-color: #374151;">
 
         <input
             id="roomCodeInput"
             type="text"
-            placeholder="Enter room code"
+            placeholder="Room code"
             maxlength="5"
         >
 
-        <input
-            id="joinName"
-            type="text"
-            placeholder="Enter your name"
+        <button
+            class="primary-button"
+            onclick="joinRoom()"
         >
-
-        <button onclick="joinRoom()">
             Join Room
         </button>
 
         <button
-            class="back-button"
+            class="secondary-button"
+            onclick="createRoom()"
+        >
+            Create New Room
+        </button>
+
+        <button
+            class="secondary-button"
             onclick="backToModes()"
         >
             Back
@@ -223,22 +374,39 @@
 
     </div>
 
-    <div id="roomCreatedPanel" class="room-panel">
 
-        <h2>Room Created</h2>
+    <!-- STRUCTURED MODE -->
 
-        <p>Give this code to the people joining your training:</p>
+    <div id="structuredMode" class="card hidden">
 
-        <div id="roomCodeDisplay" class="room-code">
-            -----
+        <h2>Structured Mode</h2>
+
+        <div class="info-box">
+
+            Structured Mode is reserved for the next
+            development phase.
+
+            <br><br>
+
+            Planned features include:
+
+            <br>
+            • Host-controlled simulations
+            <br>
+            • Simulation clock
+            <br>
+            • Scripted events
+            <br>
+            • Scheduled messages
+            <br>
+            • Host controls
+            <br>
+            • Advanced training scenarios
+
         </div>
 
-        <p id="hostStatus" class="status">
-            Waiting for participants...
-        </p>
-
         <button
-            class="back-button"
+            class="secondary-button"
             onclick="backToModes()"
         >
             Back
@@ -246,56 +414,176 @@
 
     </div>
 
-    <div class="version">
-        V3.0 • Collaborative Map Training
+
+    <!-- ROOM VIEW -->
+
+    <div id="roomView" class="hidden">
+
+        <div class="card">
+
+            <h2>
+                Free Mode Room:
+                <span id="currentRoomCode"></span>
+            </h2>
+
+            <div
+                id="participantCount"
+                class="participant-count"
+            >
+                0 participants
+            </div>
+
+            <div class="chat-layout">
+
+                <!-- CHAT LIST -->
+
+                <div class="chat-list">
+
+                    <h3>Chats</h3>
+
+                    <button
+                        id="generalChatButton"
+                        class="chat-room-button active"
+                        onclick="selectChat('general')"
+                    >
+                        General
+                    </button>
+
+                </div>
+
+
+                <!-- CHAT WINDOW -->
+
+                <div class="chat-window">
+
+                    <div class="chat-header">
+                        General
+                    </div>
+
+                    <div
+                        id="messages"
+                        class="messages"
+                    >
+                    </div>
+
+                    <div class="chat-input-area">
+
+                        <input
+                            id="messageInput"
+                            type="text"
+                            placeholder="Type a message..."
+                            autocomplete="off"
+                        >
+
+                        <button onclick="sendMessage()">
+                            Send
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
 
 </div>
 
+
 <script>
+
     const socket = io();
 
+    let currentRoomCode = null;
+    let currentUserName = null;
+
+
     function showFreeMode() {
-        document.getElementById("modeSelection").style.display = "none";
-        document.getElementById("freeModePanel").style.display = "block";
+
+        document
+            .getElementById("modeSelection")
+            .classList.add("hidden");
+
+        document
+            .getElementById("structuredMode")
+            .classList.add("hidden");
+
+        document
+            .getElementById("freeModeSetup")
+            .classList.remove("hidden");
     }
+
+
+    function showStructuredMode() {
+
+        document
+            .getElementById("modeSelection")
+            .classList.add("hidden");
+
+        document
+            .getElementById("freeModeSetup")
+            .classList.add("hidden");
+
+        document
+            .getElementById("structuredMode")
+            .classList.remove("hidden");
+    }
+
 
     function backToModes() {
-        document.getElementById("modeSelection").style.display = "grid";
-        document.getElementById("freeModePanel").style.display = "none";
-        document.getElementById("roomCreatedPanel").style.display = "none";
+
+        document
+            .getElementById("modeSelection")
+            .classList.remove("hidden");
+
+        document
+            .getElementById("freeModeSetup")
+            .classList.add("hidden");
+
+        document
+            .getElementById("structuredMode")
+            .classList.add("hidden");
     }
 
+
     function createRoom() {
+
         const name =
-            document.getElementById("hostName").value.trim() ||
-            "Host";
+            document
+                .getElementById("nameInput")
+                .value
+                .trim() || "Host";
+
+        currentUserName = name;
 
         socket.emit(
             "room:create",
             { name },
+
             (response) => {
 
                 if (!response.success) {
-                    document.getElementById("roomStatus").textContent =
-                        response.error || "Could not create room.";
+
+                    document
+                        .getElementById("roomStatus")
+                        .textContent =
+                        response.error ||
+                        "Could not create room.";
 
                     return;
                 }
 
-                document.getElementById("freeModePanel").style.display =
-                    "none";
+                enterRoom(response.code);
 
-                document.getElementById("roomCreatedPanel").style.display =
-                    "block";
-
-                document.getElementById("roomCodeDisplay").textContent =
-                    response.code;
             }
         );
     }
 
+
     function joinRoom() {
+
         const code =
             document
                 .getElementById("roomCodeInput")
@@ -304,50 +592,236 @@
                 .toUpperCase();
 
         const name =
-            document.getElementById("joinName").value.trim() ||
-            "Operator";
+            document
+                .getElementById("nameInput")
+                .value
+                .trim() || "Operator";
 
         if (!code) {
-            document.getElementById("roomStatus").textContent =
+
+            document
+                .getElementById("roomStatus")
+                .textContent =
                 "Enter a room code.";
 
             return;
         }
 
+        currentUserName = name;
+
         socket.emit(
             "room:join",
             { code, name },
+
             (response) => {
 
                 if (!response.success) {
-                    document.getElementById("roomStatus").textContent =
-                        response.error || "Could not join room.";
+
+                    document
+                        .getElementById("roomStatus")
+                        .textContent =
+                        response.error ||
+                        "Could not join room.";
 
                     return;
                 }
 
-                document.getElementById("roomStatus").textContent =
-                    `Connected to room ${response.code}.`;
+                enterRoom(response.code);
+
             }
         );
     }
 
-    function structuredModeComingSoon() {
-        alert(
-            "Structured Mode is coming next. We are building it separately so Free Mode stays stable."
+
+    function enterRoom(code) {
+
+        currentRoomCode = code;
+
+        document
+            .getElementById("freeModeSetup")
+            .classList.add("hidden");
+
+        document
+            .getElementById("modeSelection")
+            .classList.add("hidden");
+
+        document
+            .getElementById("structuredMode")
+            .classList.add("hidden");
+
+        document
+            .getElementById("roomView")
+            .classList.remove("hidden");
+
+        document
+            .getElementById("currentRoomCode")
+            .textContent = code;
+
+        document
+            .getElementById("messages")
+            .innerHTML = "";
+
+        socket.emit(
+            "chat:history",
+            { code },
+
+            (response) => {
+
+                if (!response.success) {
+                    return;
+                }
+
+                response.messages.forEach(
+                    addMessage
+                );
+
+            }
         );
     }
 
-    socket.on("room:users", (users) => {
 
-        const hostStatus =
-            document.getElementById("hostStatus");
+    function sendMessage() {
 
-        if (!hostStatus) return;
+        const input =
+            document.getElementById("messageInput");
 
-        hostStatus.textContent =
-            `${users.length} participant(s) connected.`;
-    });
+        const message =
+            input.value.trim();
+
+        if (!message || !currentRoomCode) {
+            return;
+        }
+
+        socket.emit(
+            "chat:send",
+            {
+                code: currentRoomCode,
+                message
+            },
+
+            (response) => {
+
+                if (!response.success) {
+
+                    console.error(
+                        response.error
+                    );
+
+                    return;
+                }
+
+                input.value = "";
+
+                input.focus();
+
+            }
+        );
+    }
+
+
+    function addMessage(message) {
+
+        const messages =
+            document.getElementById("messages");
+
+        const messageElement =
+            document.createElement("div");
+
+        messageElement.className =
+            "message";
+
+        const time =
+            new Date(
+                message.timestamp
+            ).toLocaleTimeString(
+                [],
+                {
+                    hour: "2-digit",
+                    minute: "2-digit"
+                }
+            );
+
+        messageElement.innerHTML = `
+            <div class="message-name">
+                ${escapeHtml(message.userName)}
+                <span class="message-time">
+                    ${time}
+                </span>
+            </div>
+
+            <div class="message-text">
+                ${escapeHtml(message.message)}
+            </div>
+        `;
+
+        messages.appendChild(
+            messageElement
+        );
+
+        messages.scrollTop =
+            messages.scrollHeight;
+    }
+
+
+    function escapeHtml(text) {
+
+        const div =
+            document.createElement("div");
+
+        div.textContent = text;
+
+        return div.innerHTML;
+    }
+
+
+    function selectChat(chatName) {
+
+        if (chatName !== "general") {
+            return;
+        }
+
+        document
+            .getElementById("generalChatButton")
+            .classList.add("active");
+    }
+
+
+    socket.on(
+        "chat:message",
+        (message) => {
+
+            addMessage(message);
+
+        }
+    );
+
+
+    socket.on(
+        "room:users",
+        (users) => {
+
+            document
+                .getElementById("participantCount")
+                .textContent =
+                `${users.length} participant(s) connected.`;
+
+        }
+    );
+
+
+    document
+        .getElementById("messageInput")
+        .addEventListener(
+            "keydown",
+            (event) => {
+
+                if (event.key === "Enter") {
+                    sendMessage();
+                }
+
+            }
+        );
+
 </script>
 
 </body>
