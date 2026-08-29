@@ -1,826 +1,1558 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Collaborative Map Training V3</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Collaborative Map Training V3</title>
+<script src="/socket.io/socket.io.js"></script>
 
-    <script src="/socket.io/socket.io.js"></script>
+<style>
+* {
+    box-sizing: border-box;
+}
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #111827;
+    color: white;
+    min-height: 100vh;
+}
 
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #111827;
-            color: white;
-            min-height: 100vh;
-        }
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 30px 0;
+}
 
-        .container {
-            width: 90%;
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 40px 0;
-        }
+h1 {
+    text-align: center;
+    font-size: 38px;
+    margin-bottom: 8px;
+}
 
-        h1 {
-            text-align: center;
-            font-size: 40px;
-            margin-bottom: 8px;
-        }
+.subtitle {
+    text-align: center;
+    color: #cbd5e1;
+    margin-bottom: 30px;
+}
 
-        .subtitle {
-            text-align: center;
-            color: #cbd5e1;
-            margin-bottom: 30px;
-        }
+.hidden {
+    display: none !important;
+}
 
-        .hidden {
-            display: none !important;
-        }
+.card {
+    background: #1f2937;
+    border: 1px solid #374151;
+    border-radius: 16px;
+    padding: 25px;
+}
 
-        .card {
-            background: #1f2937;
-            border: 1px solid #374151;
-            border-radius: 16px;
-            padding: 25px;
-        }
+/* MODE SELECTION */
 
-        .mode-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-        }
+.mode-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
 
-        .mode-card {
-            background: #1f2937;
-            border: 1px solid #374151;
-            border-radius: 16px;
-            padding: 30px;
-            text-align: center;
-        }
+.mode-card {
+    background: #1f2937;
+    border: 1px solid #374151;
+    border-radius: 16px;
+    padding: 30px;
+    text-align: center;
+}
 
-        .mode-card h2 {
-            margin-top: 0;
-        }
+.mode-card h2 {
+    margin-top: 0;
+}
 
-        .mode-card p {
-            color: #cbd5e1;
-            line-height: 1.5;
-            min-height: 70px;
-        }
+.mode-card p {
+    color: #cbd5e1;
+    line-height: 1.5;
+    min-height: 70px;
+}
 
-        input {
-            width: 100%;
-            padding: 13px;
-            margin-top: 10px;
-            border: 1px solid #4b5563;
-            border-radius: 8px;
-            background: #111827;
-            color: white;
-            font-size: 16px;
-        }
+/* INPUTS / BUTTONS */
 
-        button {
-            padding: 12px 18px;
-            border: none;
-            border-radius: 8px;
-            background: #2563eb;
-            color: white;
-            font-size: 15px;
-            font-weight: bold;
-            cursor: pointer;
-        }
+input {
+    width: 100%;
+    padding: 13px;
+    margin-top: 10px;
+    border: 1px solid #4b5563;
+    border-radius: 8px;
+    background: #111827;
+    color: white;
+    font-size: 16px;
+}
 
-        button:hover {
-            background: #1d4ed8;
-        }
+button {
+    padding: 11px 16px;
+    border: none;
+    border-radius: 8px;
+    background: #2563eb;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+}
 
-        .primary-button {
-            width: 100%;
-            margin-top: 15px;
-        }
+button:hover {
+    background: #1d4ed8;
+}
 
-        .secondary-button {
-            background: #4b5563;
-            width: 100%;
-            margin-top: 15px;
-        }
+.primary-button {
+    width: 100%;
+    margin-top: 15px;
+}
 
-        .secondary-button:hover {
-            background: #374151;
-        }
+.secondary-button {
+    background: #4b5563;
+    width: 100%;
+    margin-top: 15px;
+}
 
-        .room-code {
-            font-size: 40px;
-            font-weight: bold;
-            letter-spacing: 8px;
-            text-align: center;
-            margin: 20px 0;
-        }
+.secondary-button:hover {
+    background: #374151;
+}
 
-        .status {
-            text-align: center;
-            color: #94a3b8;
-            margin-top: 15px;
-        }
+.status {
+    text-align: center;
+    color: #94a3b8;
+    margin-top: 15px;
+}
 
-        .chat-layout {
-            display: grid;
-            grid-template-columns: 220px 1fr;
-            gap: 15px;
-            margin-top: 25px;
-        }
+/* ROOM */
 
-        .chat-list {
-            background: #1f2937;
-            border: 1px solid #374151;
-            border-radius: 12px;
-            padding: 15px;
-        }
+.room-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
 
-        .chat-list h3 {
-            margin-top: 0;
-        }
+.room-topbar h2 {
+    margin: 0;
+}
 
-        .chat-room-button {
-            width: 100%;
-            margin-bottom: 8px;
-            text-align: left;
-            background: #374151;
-        }
+.participant-count {
+    color: #94a3b8;
+    font-size: 13px;
+    margin-top: 5px;
+}
 
-        .chat-room-button.active {
-            background: #2563eb;
-        }
+/* CHAT LAYOUT */
 
-        .chat-window {
-            background: #1f2937;
-            border: 1px solid #374151;
-            border-radius: 12px;
-            display: flex;
-            flex-direction: column;
-            height: 500px;
-            min-height: 0;
-        }
+.chat-layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 15px;
+    margin-top: 25px;
+    min-height: 520px;
+}
 
-        .chat-header {
-            padding: 15px;
-            border-bottom: 1px solid #374151;
-            font-weight: bold;
-            flex-shrink: 0;
-        }
+/* SIDEBAR */
 
-        .messages {
-            flex: 1;
-            min-height: 0;
-            overflow-y: auto;
-            overflow-x: hidden;
-            padding: 15px;
-        }
+.chat-list {
+    background: #1f2937;
+    border: 1px solid #374151;
+    border-radius: 12px;
+    padding: 15px;
+    min-height: 520px;
+    overflow-y: auto;
+}
 
-        .message {
-            margin-bottom: 14px;
-            overflow-wrap: anywhere;
-        }
+.chat-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
 
-        .message-name {
-            font-weight: bold;
-            margin-bottom: 3px;
-        }
+.chat-list-header h3 {
+    margin: 0;
+}
 
-        .message-time {
-            color: #64748b;
-            font-size: 12px;
-            margin-left: 8px;
-            font-weight: normal;
-        }
+.create-chat-button {
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    font-size: 22px;
+}
 
-        .message-text {
-            color: #e5e7eb;
-            line-height: 1.4;
-        }
+/* OPEN CHAT BUTTONS */
 
-        .chat-input-area {
-            display: flex;
-            gap: 10px;
-            padding: 15px;
-            border-top: 1px solid #374151;
-            flex-shrink: 0;
-        }
+.chat-room-button {
+    width: 100%;
+    margin-bottom: 7px;
+    text-align: left;
+    background: #374151;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
 
-        .chat-input-area input {
-            margin: 0;
-            flex: 1;
-        }
+.chat-room-button:hover {
+    background: #4b5563;
+}
 
-        .chat-input-area button {
-            width: 100px;
-        }
+.chat-room-button.active {
+    background: #2563eb;
+}
 
-        .participant-count {
-            color: #94a3b8;
-            font-size: 13px;
-            margin-top: 8px;
-        }
+.chat-room-main {
+    min-width: 0;
+    flex: 1;
+    cursor: pointer;
+}
 
-        .info-box {
-            margin-top: 20px;
-            padding: 15px;
-            background: #111827;
-            border-radius: 10px;
-            color: #94a3b8;
-            line-height: 1.5;
-        }
+.chat-room-name {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
 
-        @media (max-width: 700px) {
-            .mode-grid {
-                grid-template-columns: 1fr;
-            }
+.chat-category {
+    display: block;
+    color: #9ca3af;
+    font-size: 10px;
+    margin-top: 3px;
+}
 
-            .chat-layout {
-                grid-template-columns: 1fr;
-            }
+.chat-room-button.active .chat-category {
+    color: #dbeafe;
+}
 
-            .chat-list {
-                max-height: 150px;
-                overflow-y: auto;
-            }
+.close-chat-button {
+    width: 25px;
+    height: 25px;
+    padding: 0;
+    border-radius: 6px;
+    background: #4b5563;
+    font-size: 14px;
+    flex-shrink: 0;
+}
 
-            .chat-window {
-                height: 60vh;
-                min-height: 400px;
-            }
+.close-chat-button:hover {
+    background: #ef4444;
+}
 
-            h1 {
-                font-size: 30px;
-            }
+/* CREATE CHAT */
 
-            .chat-input-area {
-                flex-direction: column;
-            }
+.create-chat-panel {
+    background: #111827;
+    border: 1px solid #374151;
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 12px;
+}
 
-            .chat-input-area button {
-                width: 100%;
-            }
-        }
-    </style>
+.create-chat-panel h4 {
+    margin: 0 0 8px 0;
+}
+
+.create-chat-panel input {
+    margin-top: 6px;
+}
+
+.create-chat-panel button {
+    width: 100%;
+    margin-top: 8px;
+}
+
+/* =========================
+   COLLAPSIBLE ALL CHATS
+========================= */
+
+.chat-folder {
+    border-top: 1px solid #374151;
+    padding-top: 12px;
+    margin-top: 12px;
+}
+
+.folder-toggle {
+    width: 100%;
+    background: #374151;
+    text-align: left;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.folder-toggle:hover {
+    background: #4b5563;
+}
+
+.folder-arrow {
+    font-size: 12px;
+}
+
+.folder-content {
+    margin-top: 10px;
+}
+
+.folder-chat-button {
+    width: 100%;
+    margin-bottom: 7px;
+    text-align: left;
+    background: #111827;
+    border: 1px solid #374151;
+}
+
+.folder-chat-button:hover {
+    background: #374151;
+}
+
+.folder-chat-button.open {
+    opacity: 0.6;
+}
+
+.empty-folder {
+    color: #64748b;
+    font-size: 12px;
+    padding: 5px 0;
+}
+
+/* CHAT WINDOW */
+
+.chat-window {
+    background: #1f2937;
+    border: 1px solid #374151;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    height: 520px;
+    min-height: 0;
+}
+
+.chat-header {
+    padding: 15px;
+    border-bottom: 1px solid #374151;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.chat-header small {
+    display: block;
+    color: #94a3b8;
+    font-weight: normal;
+    margin-top: 4px;
+}
+
+/* MESSAGES */
+
+.messages {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 10px 15px;
+}
+
+.message {
+    display: block;
+    margin: 0;
+    padding: 2px 0;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.message-name {
+    display: inline;
+    font-weight: bold;
+}
+
+.message-text {
+    display: inline;
+    color: #e5e7eb;
+    white-space: pre-wrap;
+}
+
+.message-time {
+    display: inline;
+    color: #64748b;
+    font-size: 10px;
+    margin-left: 5px;
+}
+
+/* CHAT INPUT */
+
+.chat-input-area {
+    display: flex;
+    gap: 10px;
+    padding: 15px;
+    border-top: 1px solid #374151;
+    flex-shrink: 0;
+}
+
+.chat-input-area input {
+    margin: 0;
+    flex: 1;
+    min-width: 0;
+}
+
+.chat-input-area button {
+    width: 100px;
+    flex-shrink: 0;
+}
+
+/* INFO */
+
+.info-box {
+    margin-top: 20px;
+    padding: 15px;
+    background: #111827;
+    border-radius: 10px;
+    color: #94a3b8;
+    line-height: 1.5;
+}
+
+/* MOBILE */
+
+@media (max-width: 700px) {
+
+    .container {
+        width: 94%;
+        padding: 20px 0;
+    }
+
+    .mode-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .chat-layout {
+        grid-template-columns: 1fr;
+        min-height: 0;
+    }
+
+    .chat-list {
+        min-height: 0;
+        max-height: 230px;
+    }
+
+    .chat-window {
+        height: 60vh;
+        min-height: 400px;
+    }
+
+    h1 {
+        font-size: 30px;
+    }
+
+    .chat-input-area {
+        flex-direction: column;
+    }
+
+    .chat-input-area button {
+        width: 100%;
+    }
+}
+</style>
+
 </head>
 
 <body>
 
 <div class="container">
 
-    <h1>Collaborative Map Training V3</h1>
+<h1>Collaborative Map Training V3</h1>
 
-    <div class="subtitle">
-        Collaborative Training Platform
-    </div>
+<div class="subtitle">
+Collaborative Training Platform
+</div>
 
-    <!-- MODE SELECTION -->
+<!-- MODE SELECTION -->
 
-    <div id="modeSelection" class="mode-grid">
+<div id="modeSelection" class="mode-grid">
 
-        <div class="mode-card">
+<div class="mode-card">
 
-            <h2>Free Mode</h2>
+<h2>Free Mode</h2>
 
-            <p>
-                Open-ended collaborative training.
-                Create or join a room and communicate
-                with other participants.
-            </p>
+<p>
+Open-ended collaborative training.
+Create or join a room and communicate
+with other participants.
+</p>
 
-            <button
-                class="primary-button"
-                onclick="showFreeMode()"
-            >
-                Start Free Mode
-            </button>
-
-        </div>
-
-        <div class="mode-card">
-
-            <h2>Structured Mode</h2>
-
-            <p>
-                Host-controlled simulations with
-                scripted events, simulation time,
-                and advanced training controls.
-            </p>
-
-            <button
-                class="primary-button"
-                onclick="showStructuredMode()"
-            >
-                Start Structured Mode
-            </button>
-
-        </div>
-
-    </div>
-
-
-    <!-- FREE MODE SETUP -->
-
-    <div id="freeModeSetup" class="card hidden">
-
-        <h2>Free Mode</h2>
-
-        <p>
-            Create a new room or join an existing room.
-        </p>
-
-        <input
-            id="nameInput"
-            type="text"
-            placeholder="Your name"
-        >
-
-        <input
-            id="roomCodeInput"
-            type="text"
-            placeholder="Room code"
-            maxlength="5"
-        >
-
-        <button
-            class="primary-button"
-            onclick="joinRoom()"
-        >
-            Join Room
-        </button>
-
-        <button
-            class="secondary-button"
-            onclick="createRoom()"
-        >
-            Create New Room
-        </button>
-
-        <button
-            class="secondary-button"
-            onclick="backToModes()"
-        >
-            Back
-        </button>
-
-        <div id="roomStatus" class="status"></div>
-
-    </div>
-
-
-    <!-- STRUCTURED MODE -->
-
-    <div id="structuredMode" class="card hidden">
-
-        <h2>Structured Mode</h2>
-
-        <div class="info-box">
-
-            Structured Mode is reserved for the next
-            development phase.
-
-            <br><br>
-
-            Planned features include:
-
-            <br>
-            • Host-controlled simulations
-            <br>
-            • Simulation clock
-            <br>
-            • Scripted events
-            <br>
-            • Scheduled messages
-            <br>
-            • Host controls
-            <br>
-            • Advanced training scenarios
-
-        </div>
-
-        <button
-            class="secondary-button"
-            onclick="backToModes()"
-        >
-            Back
-        </button>
-
-    </div>
-
-
-    <!-- ROOM VIEW -->
-
-    <div id="roomView" class="hidden">
-
-        <div class="card">
-
-            <h2>
-                Free Mode Room:
-                <span id="currentRoomCode"></span>
-            </h2>
-
-            <div
-                id="participantCount"
-                class="participant-count"
-            >
-                0 participants
-            </div>
-
-            <div class="chat-layout">
-
-                <!-- CHAT LIST -->
-
-                <div class="chat-list">
-
-                    <h3>Chats</h3>
-
-                    <button
-                        id="generalChatButton"
-                        class="chat-room-button active"
-                        onclick="selectChat('general')"
-                    >
-                        General
-                    </button>
-
-                </div>
-
-
-                <!-- CHAT WINDOW -->
-
-                <div class="chat-window">
-
-                    <div class="chat-header">
-                        General
-                    </div>
-
-                    <div
-                        id="messages"
-                        class="messages"
-                    >
-                    </div>
-
-                    <div class="chat-input-area">
-
-                        <input
-                            id="messageInput"
-                            type="text"
-                            placeholder="Type a message..."
-                            autocomplete="off"
-                        >
-
-                        <button onclick="sendMessage()">
-                            Send
-                        </button>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
+<button
+class="primary-button"
+onclick="showFreeMode()">
+Start Free Mode </button>
 
 </div>
 
+<div class="mode-card">
+
+<h2>Structured Mode</h2>
+
+<p>
+Host-controlled simulations with
+scripted events, simulation time,
+and advanced training controls.
+</p>
+
+<button
+class="primary-button"
+onclick="showStructuredMode()">
+Start Structured Mode </button>
+
+</div>
+
+</div>
+
+<!-- FREE MODE SETUP -->
+
+<div id="freeModeSetup" class="card hidden">
+
+<h2>Free Mode</h2>
+
+<p>
+Create a new room or join an existing room.
+</p>
+
+<input
+id="nameInput"
+type="text"
+placeholder="Your name">
+
+<input
+id="roomCodeInput"
+type="text"
+placeholder="Room code"
+maxlength="5">
+
+<button
+class="primary-button"
+onclick="joinRoom()">
+Join Room </button>
+
+<button
+class="secondary-button"
+onclick="createRoom()">
+Create New Room </button>
+
+<button
+class="secondary-button"
+onclick="backToModes()">
+Back </button>
+
+<div
+id="roomStatus"
+class="status">
+</div>
+
+</div>
+
+<!-- STRUCTURED MODE -->
+
+<div id="structuredMode" class="card hidden">
+
+<h2>Structured Mode</h2>
+
+<div class="info-box">
+
+Structured Mode is reserved for the next
+development phase.
+
+<br><br>
+
+Planned features:
+
+<br>
+• Host-controlled simulations
+<br>
+• Simulation clock
+<br>
+• Scripted events
+<br>
+• Scheduled messages
+<br>
+• Host controls
+<br>
+• Advanced training scenarios
+
+</div>
+
+<button
+class="secondary-button"
+onclick="backToModes()">
+Back </button>
+
+</div>
+
+<!-- ROOM VIEW -->
+
+<div id="roomView" class="hidden">
+
+<div class="card">
+
+<div class="room-topbar">
+
+<div>
+
+<h2>
+Free Mode Room:
+<span id="currentRoomCode"></span>
+</h2>
+
+<div
+id="participantCount"
+class="participant-count">
+0 participants
+</div>
+
+</div>
+
+</div>
+
+<div class="chat-layout">
+
+<!-- SIDEBAR -->
+
+<div class="chat-list">
+
+<div class="chat-list-header">
+
+<h3>Open Chats</h3>
+
+<button
+class="create-chat-button"
+onclick="toggleCreateChat()"
+title="Create chat">
++ </button>
+
+</div>
+
+<div
+id="createChatPanel"
+class="create-chat-panel hidden">
+
+<h4>New Chat</h4>
+
+<input
+id="newChatName"
+type="text"
+placeholder="Chat name"
+maxlength="40">
+
+<input
+id="newChatCategory"
+type="text"
+placeholder="Category"
+maxlength="30">
+
+<button onclick="createChat()">
+Create
+</button>
+
+</div>
+
+<div id="chatListItems"></div>
+
+<!-- ALL CHATS FOLDER -->
+
+<div class="chat-folder">
+
+<button
+id="folderToggle"
+class="folder-toggle"
+onclick="toggleAllChats()">
+
+<span>
+📂 All Chats
+</span>
+
+<span
+id="folderArrow"
+class="folder-arrow">
+▶ </span>
+
+</button>
+
+<div
+id="allChatFolderContent"
+class="folder-content hidden">
+
+<div id="allChatItems"></div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- CHAT WINDOW -->
+
+<div class="chat-window">
+
+<div
+id="chatHeader"
+class="chat-header">
+
+General
+
+<small>
+General discussion
+</small>
+
+</div>
+
+<div
+id="messages"
+class="messages">
+</div>
+
+<div class="chat-input-area">
+
+<input
+id="messageInput"
+type="text"
+placeholder="Type a message..."
+autocomplete="off">
+
+<button onclick="sendMessage()">
+Send
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
 
 <script>
 
-    const socket = io();
+const socket = io();
 
-    let currentRoomCode = null;
-    let currentUserName = null;
+let currentRoomCode = null;
+let currentUserName = null;
+let currentChatId = "general";
+let chats = [];
+let openChatIds = ["general"];
 
+/* MODE SELECTION */
 
-    function showFreeMode() {
+function showFreeMode() {
 
-        document
-            .getElementById("modeSelection")
-            .classList.add("hidden");
+document
+.getElementById("modeSelection")
+.classList.add("hidden");
 
-        document
-            .getElementById("structuredMode")
-            .classList.add("hidden");
+document
+.getElementById("structuredMode")
+.classList.add("hidden");
 
-        document
-            .getElementById("freeModeSetup")
-            .classList.remove("hidden");
-    }
+document
+.getElementById("freeModeSetup")
+.classList.remove("hidden");
 
+}
 
-    function showStructuredMode() {
+function showStructuredMode() {
 
-        document
-            .getElementById("modeSelection")
-            .classList.add("hidden");
+document
+.getElementById("modeSelection")
+.classList.add("hidden");
 
-        document
-            .getElementById("freeModeSetup")
-            .classList.add("hidden");
+document
+.getElementById("freeModeSetup")
+.classList.add("hidden");
 
-        document
-            .getElementById("structuredMode")
-            .classList.remove("hidden");
-    }
+document
+.getElementById("structuredMode")
+.classList.remove("hidden");
 
+}
 
-    function backToModes() {
+function backToModes() {
 
-        document
-            .getElementById("modeSelection")
-            .classList.remove("hidden");
+document
+.getElementById("modeSelection")
+.classList.remove("hidden");
 
-        document
-            .getElementById("freeModeSetup")
-            .classList.add("hidden");
+document
+.getElementById("freeModeSetup")
+.classList.add("hidden");
 
-        document
-            .getElementById("structuredMode")
-            .classList.add("hidden");
-    }
+document
+.getElementById("structuredMode")
+.classList.add("hidden");
 
+}
 
-    function createRoom() {
+/* CREATE ROOM */
 
-        const name =
-            document
-                .getElementById("nameInput")
-                .value
-                .trim() || "Host";
+function createRoom() {
 
-        currentUserName = name;
+const name =
+document
+.getElementById("nameInput")
+.value
+.trim()
+|| "Host";
 
-        socket.emit(
-            "room:create",
-            { name },
+currentUserName = name;
 
-            (response) => {
+socket.emit(
+"room:create",
+{ name },
+(response) => {
 
-                if (!response.success) {
+if (!response.success) {
 
-                    document
-                        .getElementById("roomStatus")
-                        .textContent =
-                        response.error ||
-                        "Could not create room.";
+document
+.getElementById("roomStatus")
+.textContent =
+response.error
+|| "Could not create room.";
 
-                    return;
-                }
+return;
 
-                enterRoom(response.code);
+}
 
-            }
-        );
-    }
+enterRoom(response.code);
 
+}
+);
 
-    function joinRoom() {
+}
 
-        const code =
-            document
-                .getElementById("roomCodeInput")
-                .value
-                .trim()
-                .toUpperCase();
+/* JOIN ROOM */
 
-        const name =
-            document
-                .getElementById("nameInput")
-                .value
-                .trim() || "Operator";
+function joinRoom() {
 
-        if (!code) {
+const code =
+document
+.getElementById("roomCodeInput")
+.value
+.trim()
+.toUpperCase();
 
-            document
-                .getElementById("roomStatus")
-                .textContent =
-                "Enter a room code.";
+const name =
+document
+.getElementById("nameInput")
+.value
+.trim()
+|| "Operator";
 
-            return;
-        }
+if (!code) {
 
-        currentUserName = name;
+document
+.getElementById("roomStatus")
+.textContent =
+"Enter a room code.";
 
-        socket.emit(
-            "room:join",
-            { code, name },
+return;
 
-            (response) => {
+}
 
-                if (!response.success) {
+currentUserName = name;
 
-                    document
-                        .getElementById("roomStatus")
-                        .textContent =
-                        response.error ||
-                        "Could not join room.";
+socket.emit(
+"room:join",
+{ code, name },
+(response) => {
 
-                    return;
-                }
+if (!response.success) {
 
-                enterRoom(response.code);
+document
+.getElementById("roomStatus")
+.textContent =
+response.error
+|| "Could not join room.";
 
-            }
-        );
-    }
+return;
 
+}
 
-    function enterRoom(code) {
+enterRoom(response.code);
 
-        currentRoomCode = code;
+}
+);
 
-        document
-            .getElementById("freeModeSetup")
-            .classList.add("hidden");
+}
 
-        document
-            .getElementById("modeSelection")
-            .classList.add("hidden");
+/* ENTER ROOM */
 
-        document
-            .getElementById("structuredMode")
-            .classList.add("hidden");
+function enterRoom(code) {
 
-        document
-            .getElementById("roomView")
-            .classList.remove("hidden");
+currentRoomCode = code;
+currentChatId = "general";
+openChatIds = ["general"];
 
-        document
-            .getElementById("currentRoomCode")
-            .textContent = code;
+document
+.getElementById("freeModeSetup")
+.classList.add("hidden");
 
-        document
-            .getElementById("messages")
-            .innerHTML = "";
+document
+.getElementById("modeSelection")
+.classList.add("hidden");
 
-        socket.emit(
-            "chat:history",
-            { code },
+document
+.getElementById("structuredMode")
+.classList.add("hidden");
 
-            (response) => {
+document
+.getElementById("roomView")
+.classList.remove("hidden");
 
-                if (!response.success) {
-                    return;
-                }
+document
+.getElementById("currentRoomCode")
+.textContent = code;
 
-                response.messages.forEach(
-                    addMessage
-                );
+document
+.getElementById("messages")
+.innerHTML = "";
 
-            }
-        );
-    }
+/* Start All Chats collapsed */
 
+document
+.getElementById("allChatFolderContent")
+.classList.add("hidden");
 
-    function sendMessage() {
+document
+.getElementById("folderArrow")
+.textContent = "▶";
 
-        const input =
-            document.getElementById("messageInput");
+renderChatList();
+renderAllChats();
 
-        const message =
-            input.value.trim();
+socket.emit(
+"chat:history",
+{
+code,
+chatId: "general"
+},
+(response) => {
 
-        if (!message || !currentRoomCode) {
-            return;
-        }
+if (!response.success) {
+return;
+}
 
-        socket.emit(
-            "chat:send",
-            {
-                code: currentRoomCode,
-                message
-            },
+response.messages.forEach(addMessage);
 
-            (response) => {
+}
+);
 
-                if (!response.success) {
+}
 
-                    console.error(
-                        response.error
-                    );
+/* COLLAPSE / EXPAND ALL CHATS */
 
-                    return;
-                }
+function toggleAllChats() {
 
-                input.value = "";
+const folder =
+document.getElementById(
+"allChatFolderContent"
+);
 
-                input.focus();
+const arrow =
+document.getElementById(
+"folderArrow"
+);
 
-            }
-        );
-    }
+const isHidden =
+folder.classList.contains("hidden");
 
+if (isHidden) {
 
-    function addMessage(message) {
+folder.classList.remove("hidden");
+arrow.textContent = "▼";
 
-        const messages =
-            document.getElementById("messages");
+} else {
 
-        const messageElement =
-            document.createElement("div");
+folder.classList.add("hidden");
+arrow.textContent = "▶";
 
-        messageElement.className =
-            "message";
+}
 
-        const time =
-            new Date(
-                message.timestamp
-            ).toLocaleTimeString(
-                [],
-                {
-                    hour: "2-digit",
-                    minute: "2-digit"
-                }
-            );
+}
 
-        messageElement.innerHTML = `
-            <div class="message-name">
-                ${escapeHtml(message.userName)}
-                <span class="message-time">
-                    ${time}
-                </span>
-            </div>
+/* CHAT LIST */
 
-            <div class="message-text">
-                ${escapeHtml(message.message)}
-            </div>
-        `;
+socket.on(
+"chat:list",
+(serverChats) => {
 
-        messages.appendChild(
-            messageElement
-        );
+chats = serverChats || [];
 
-        messages.scrollTop =
-            messages.scrollHeight;
-    }
+renderChatList();
+renderAllChats();
 
+}
+);
 
-    function escapeHtml(text) {
+socket.on(
+"chat:openList",
+(serverOpenChats) => {
 
-        const div =
-            document.createElement("div");
+openChatIds =
+serverOpenChats || ["general"];
 
-        div.textContent = text;
+if (!openChatIds.includes("general")) {
 
-        return div.innerHTML;
-    }
+openChatIds.unshift("general");
 
+}
 
-    function selectChat(chatName) {
+if (!openChatIds.includes(currentChatId)) {
 
-        if (chatName !== "general") {
-            return;
-        }
+currentChatId = "general";
+loadChat("general");
 
-        document
-            .getElementById("generalChatButton")
-            .classList.add("active");
-    }
+}
 
+renderChatList();
+renderAllChats();
 
-    socket.on(
-        "chat:message",
-        (message) => {
+}
+);
 
-            addMessage(message);
+/* OPEN CHATS */
 
-        }
-    );
+function renderChatList() {
 
+const list =
+document.getElementById(
+"chatListItems"
+);
 
-    socket.on(
-        "room:users",
-        (users) => {
+list.innerHTML = "";
 
-            document
-                .getElementById("participantCount")
-                .textContent =
-                `${users.length} participant(s) connected.`;
+const openChats =
+chats.filter(
+chat =>
+openChatIds.includes(chat.id)
+);
 
-        }
-    );
+openChats.forEach(chat => {
 
+const button =
+document.createElement("div");
 
-    document
-        .getElementById("messageInput")
-        .addEventListener(
-            "keydown",
-            (event) => {
+button.className =
+"chat-room-button";
 
-                if (event.key === "Enter") {
-                    sendMessage();
-                }
+if (chat.id === currentChatId) {
 
-            }
-        );
+button.classList.add("active");
+
+}
+
+const main =
+document.createElement("div");
+
+main.className =
+"chat-room-main";
+
+main.innerHTML = `
+
+<span class="chat-room-name">
+${escapeHtml(chat.name)}
+</span>
+
+<span class="chat-category">
+${escapeHtml(chat.category || "General")}
+</span>
+
+`;
+
+main.onclick = () => {
+loadChat(chat.id);
+};
+
+button.appendChild(main);
+
+if (chat.id !== "general") {
+
+const closeButton =
+document.createElement("button");
+
+closeButton.className =
+"close-chat-button";
+
+closeButton.textContent = "×";
+
+closeButton.title =
+"Close chat";
+
+closeButton.onclick =
+(event) => {
+
+event.stopPropagation();
+
+closeChat(chat.id);
+
+};
+
+button.appendChild(closeButton);
+
+}
+
+list.appendChild(button);
+
+});
+
+}
+
+/* ALL CHATS */
+
+function renderAllChats() {
+
+const list =
+document.getElementById(
+"allChatItems"
+);
+
+list.innerHTML = "";
+
+if (!chats.length) {
+
+list.innerHTML =
+`<div class="empty-folder">
+No chats available.
+</div>`;
+
+return;
+
+}
+
+chats.forEach(chat => {
+
+const button =
+document.createElement("button");
+
+button.className =
+"folder-chat-button";
+
+const isOpen =
+openChatIds.includes(chat.id);
+
+if (isOpen) {
+
+button.classList.add("open");
+
+button.textContent =
+`✓ ${chat.name}`;
+
+} else {
+
+button.textContent =
+`＋ ${chat.name}`;
+
+}
+
+button.onclick = () => {
+
+openChat(chat.id);
+
+};
+
+list.appendChild(button);
+
+});
+
+}
+
+/* LOAD CHAT */
+
+function loadChat(chatId) {
+
+if (!openChatIds.includes(chatId)) {
+return;
+}
+
+currentChatId = chatId;
+
+const chat =
+chats.find(
+item => item.id === chatId
+);
+
+if (chat) {
+
+document
+.getElementById("chatHeader")
+.innerHTML = `
+
+${escapeHtml(chat.name)}
+
+<small>
+${escapeHtml(
+chat.category || "General"
+)}
+</small>
+
+`;
+
+}
+
+document
+.getElementById("messages")
+.innerHTML = "";
+
+renderChatList();
+
+socket.emit(
+"chat:history",
+{
+code: currentRoomCode,
+chatId: currentChatId
+},
+(response) => {
+
+if (!response.success) {
+return;
+}
+
+response.messages.forEach(addMessage);
+
+}
+);
+
+}
+
+/* OPEN CHAT */
+
+function openChat(chatId) {
+
+socket.emit(
+"chat:open",
+{
+code: currentRoomCode,
+chatId
+},
+(response) => {
+
+if (
+!response ||
+!response.success
+) {
+
+alert(
+response?.error
+|| "Could not open chat."
+);
+
+return;
+
+}
+
+loadChat(chatId);
+
+}
+);
+
+}
+
+/* CLOSE CHAT */
+
+function closeChat(chatId) {
+
+if (chatId === "general") {
+return;
+}
+
+socket.emit(
+"chat:close",
+{
+code: currentRoomCode,
+chatId
+},
+(response) => {
+
+if (
+response &&
+!response.success
+) {
+
+alert(
+response.error
+|| "Could not close chat."
+);
+
+}
+
+}
+);
+
+}
+
+/* CREATE CHAT */
+
+function toggleCreateChat() {
+
+document
+.getElementById("createChatPanel")
+.classList.toggle("hidden");
+
+}
+
+function createChat() {
+
+const name =
+document
+.getElementById("newChatName")
+.value
+.trim();
+
+const category =
+document
+.getElementById("newChatCategory")
+.value
+.trim();
+
+if (!name) {
+
+alert("Enter a chat name.");
+
+return;
+
+}
+
+socket.emit(
+"chat:create",
+{
+code: currentRoomCode,
+name,
+category: category || "General"
+},
+(response) => {
+
+if (!response.success) {
+
+alert(
+response.error
+|| "Could not create chat."
+);
+
+return;
+
+}
+
+document
+.getElementById("newChatName")
+.value = "";
+
+document
+.getElementById("newChatCategory")
+.value = "";
+
+document
+.getElementById("createChatPanel")
+.classList.add("hidden");
+
+openChat(response.chatId);
+
+}
+);
+
+}
+
+/* SEND MESSAGE */
+
+function sendMessage() {
+
+const input =
+document.getElementById(
+"messageInput"
+);
+
+const message =
+input.value.trim();
+
+if (
+!message ||
+!currentRoomCode
+) {
+
+return;
+
+}
+
+socket.emit(
+"chat:send",
+{
+code: currentRoomCode,
+chatId: currentChatId,
+message
+},
+(response) => {
+
+if (
+response &&
+!response.success
+) {
+
+console.error(
+response.error
+);
+
+return;
+
+}
+
+input.value = "";
+input.focus();
+
+}
+);
+
+}
+
+/* RECEIVE MESSAGE */
+
+socket.on(
+"chat:message",
+(payload) => {
+
+if (!payload) {
+return;
+}
+
+if (
+payload.chatId !== currentChatId
+) {
+
+return;
+
+}
+
+addMessage(payload.message);
+
+}
+);
+
+/* ADD MESSAGE */
+
+function addMessage(message) {
+
+if (!message) {
+return;
+}
+
+const messages =
+document.getElementById(
+"messages"
+);
+
+const messageElement =
+document.createElement(
+"div"
+);
+
+messageElement.className =
+"message";
+
+const timestamp =
+Number(message.timestamp);
+
+const time =
+Number.isFinite(timestamp)
+? new Date(timestamp)
+.toLocaleTimeString(
+[],
+{
+hour: "2-digit",
+minute: "2-digit"
+}
+)
+: "";
+
+messageElement.innerHTML =
+`<span class="message-name">${escapeHtml(
+message.userName || "Unknown"
+)}:</span> <span class="message-text">${escapeHtml(
+message.message || ""
+)}</span> <span class="message-time">(${time})</span>`;
+
+messages.appendChild(
+messageElement
+);
+
+messages.scrollTop =
+messages.scrollHeight;
+
+}
+
+/* PARTICIPANTS */
+
+socket.on(
+"room:users",
+(users) => {
+
+const count =
+users ? users.length : 0;
+
+document
+.getElementById(
+"participantCount"
+)
+.textContent =
+`${count} participant(s) connected.`;
+
+}
+);
+
+/* HOST CHANGE */
+
+socket.on(
+"room:hostChanged",
+() => {
+
+// Host controls will be expanded later.
+
+}
+);
+
+/* ESCAPE HTML */
+
+function escapeHtml(text) {
+
+const div =
+document.createElement("div");
+
+div.textContent =
+String(text);
+
+return div.innerHTML;
+
+}
+
+/* ENTER TO SEND */
+
+document
+.getElementById("messageInput")
+.addEventListener(
+"keydown",
+(event) => {
+
+if (
+event.key === "Enter"
+&& !event.shiftKey
+) {
+
+event.preventDefault();
+
+sendMessage();
+
+}
+
+}
+);
 
 </script>
 
