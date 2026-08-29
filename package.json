@@ -12,6 +12,7 @@
   "type": "commonjs",
   "dependencies": {
     "express": "^5.2.1",
+    "maplibre-gl": "^6.6.0",
     "socket.io": "^4.8.3"
   }
 }
